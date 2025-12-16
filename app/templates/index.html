@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}首页 - 图书推荐系统{% endblock %}
+{% block content %}
+  <h1>图书推荐系统</h1>
+
+  {% if current_user.is_authenticated %}
+    <p>欢迎回来，{{ current_user.username }}！</p>
+  {% else %}
+    <p>欢迎来到图书推荐系统，请先登录或注册账号。</p>
+  {% endif %}
+
+  <hr />
+  <h3>{{ rec_title }}</h3>
+
+  {% if rec_books %}
+    <div class="row">
+      {% for book in rec_books %}
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="row g-0">
+            <div class="col-4 d-flex align-items-center justify-content-center">
+
+              {% if book.small_image_url %}
+              <img 
+                src="{{ book.image_url or book.small_image_url }}" 
+                alt="{{ book.title }}" 
+                class="img-fluid rounded-start"
+                style="max-height: 180px; width: auto;"
+              />
+              {% endif %}
+
+            </div>
+            <div class="col-8">
+              <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <p class="card-text">
+                  <small class="text-muted">
+                    作者：{{ book.authors }}<br />
+                    评分：{{ '%.2f'|format(book.average_rating or 0) }}（{{ book.ratings_count or 0 }} 人评分）
+                  </small>
+                </p>
+                <a href="{{ url_for('main.book_detail', book_id=book.book_id) }}" class="btn btn-sm btn-primary">
+                  查看详情
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>暂时没有推荐书籍。</p>
+  {% endif %}
+{% endblock %}
+

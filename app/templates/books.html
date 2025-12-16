@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}图书列表{% endblock %}
+{% block content %}
+  <h2>图书列表</h2>
+
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+      <input
+        type="text"
+        class="form-control"
+        name="q"
+        placeholder="按书名或作者搜索"
+        value="{{ q }}"
+      />
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary">搜索</button>
+    </div>
+  </form>
+
+  {% if books %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>书籍ID</th>
+          <th>书名</th>
+          <th>作者</th>
+          <th>平均评分</th>
+          <th>评分人数</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book in books %}
+        <tr>
+          <td>{{ book.book_id }}</td>
+          <td>{{ book.title }}</td>
+          <td>{{ book.authors }}</td>
+          <td>{{ '%.2f'|format(book.average_rating or 0) }}</td>
+          <td>{{ book.ratings_count or 0 }}</td>
+          <td>
+            <a class="btn btn-sm btn-outline-primary"
+               href="{{ url_for('main.book_detail', book_id=book.book_id) }}">
+              查看详情
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- 分页 -->
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% if pagination.has_prev %}
+        <li class="page-item">
+          <a class="page-link"
+             href="{{ url_for('main.books_list', page=pagination.prev_num, q=q) }}">上一页</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">上一页</span></li>
+        {% endif %}
+
+        <li class="page-item disabled">
+          <span class="page-link">
+            第 {{ pagination.page }} / {{ pagination.pages }} 页
+          </span>
+        </li>
+
+        {% if pagination.has_next %}
+        <li class="page-item">
+          <a class="page-link"
+             href="{{ url_for('main.books_list', page=pagination.next_num, q=q) }}">下一页</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">下一页</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% else %}
+    <p>没有找到相关图书。</p>
+  {% endif %}
+{% endblock %}
+

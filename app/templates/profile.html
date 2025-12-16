@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}个人主页{% endblock %}
+{% block content %}
+  <h2>个人主页</h2>
+
+  <div class="mb-3">
+    <p><strong>用户名：</strong>{{ user.username }}</p>
+    <p><strong>邮箱：</strong>{{ user.email }}</p>
+    <p>
+      <strong>已评分图书数量：</strong>{{ total_rated }}
+      {% if avg_rating is not none %}
+        （平均评分：{{ '%.2f'|format(avg_rating) }} 分）
+      {% endif %}
+    </p>
+  </div>
+
+  <hr />
+  <h4>我评价过的书籍</h4>
+
+  {% if ratings %}
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th>书籍ID</th>
+          <th>封面</th>
+          <th>书名</th>
+          <th>作者</th>
+          <th>我的评分</th>
+          <th>全局平均评分</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in ratings %}
+        <tr>
+          <td>{{ r.book.book_id }}</td>
+          <td style="width: 80px;">
+            {% if r.book.small_image_url or r.book.image_url %}
+            <img
+              src="{{ r.book.small_image_url or r.book.image_url }}"
+              alt="{{ r.book.title }}"
+              class="img-fluid"
+              style="max-height: 80px; width: auto;"
+            />
+            {% endif %}
+          </td>
+          <td>{{ r.book.title }}</td>
+          <td>{{ r.book.authors }}</td>
+          <td>{{ r.rating }} 分</td>
+          <td>{{ '%.2f'|format(r.book.average_rating or 0) }}</td>
+          <td>
+            <a href="{{ url_for('main.book_detail', book_id=r.book.book_id) }}"
+               class="btn btn-sm btn-outline-primary">
+              查看详情
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>你还没有评价过任何书籍，可以先去 <a href="{{ url_for('main.books_list') }}">图书浏览</a> 页面看看～</p>
+  {% endif %}
+{% endblock %}
+
